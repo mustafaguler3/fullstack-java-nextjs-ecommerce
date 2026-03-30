@@ -1,4 +1,4 @@
-package com.example.ecommerce.config;
+package com.example.my_app.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

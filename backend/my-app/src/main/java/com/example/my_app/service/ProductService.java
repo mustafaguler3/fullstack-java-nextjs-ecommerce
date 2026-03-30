@@ -1,6 +1,7 @@
-package com.example.ecommerce.service;
+package com.example.my_app.service;
 
-import com.example.ecommerce.domain.Product;
+
+import com.example.my_app.domain.Product;
 
 import java.util.List;
 

@@ -1,12 +1,44 @@
 services:
-  postgres:
-    image: postgres:latest
+  db:
+    image: postgres:15
     container_name: ecommerce_db_container
     environment:
       POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
     ports:
       - "5432:5432"
-    env_file:
-      - backend/.env.dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  backend:
+    build:
+      context: ./backend/my-app
+      dockerfile: Dockerfile
+    container_name: ecommerce_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ecommerce_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - db
+
+
+  frontend:
+    build:
+      context: ./frontend/my-app
+      dockerfile: Dockerfile
+    container_name: ecommerce_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:8080/api
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
