@@ -19,7 +19,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build Backend
-        run: mvn -f backend/pom.xml clean package -DskipTests
+        working-directory: backend/my-app
+        run: mvn clean package -DskipTests
 
 
   frontend-build:
