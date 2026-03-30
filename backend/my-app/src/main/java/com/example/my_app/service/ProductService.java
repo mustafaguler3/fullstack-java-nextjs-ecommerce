@@ -2,9 +2,10 @@ package com.example.my_app.service;
 
 
 import com.example.my_app.domain.Product;
+import com.example.my_app.response.ApiResponse;
 
 import java.util.List;
 
 public interface ProductService {
-    List<Product> findAllProducts();
+    ApiResponse<List<Product>> findAllProducts();
 }
