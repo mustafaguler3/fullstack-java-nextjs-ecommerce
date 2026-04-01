@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
 
@@ -14,11 +13,9 @@ export default function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Şifreler uyuşmuyor!");
+      alert("Passwords do not match!");
       return;
     }
-    console.log("Kayıt verileri:", formData);
-    
   };
 
   return (

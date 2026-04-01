@@ -1,16 +1,24 @@
 services:
   db:
-    image: postgres:15
-    container_name: ecommerce_db_container
-    environment:
-      POSTGRES_DB: ecommerce_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
+    image: mysql:8.0
+    container_name: mgstore_db_container
+    restart: always
     ports:
-      - "5432:5432"
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=ecommerce_db
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=1234
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ecommerce-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-p1234" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build:
@@ -20,13 +28,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/ecommerce_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: 123456
-      SPRING_PROFILES_ACTIVE: dev
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=1234
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
     depends_on:
-      - db
-
+      db:
+        condition: service_healthy
+    networks:
+      - ecommerce-network
 
   frontend:
     build:
@@ -36,9 +47,13 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://backend:8080/api
+      - NEXT_PUBLIC_API_URL=http://localhost:8080/api
     depends_on:
       - backend
 
+networks:
+  ecommerce-network:
+    driver: bridge
+
 volumes:
-  postgres_data:
+  mysql_data:
