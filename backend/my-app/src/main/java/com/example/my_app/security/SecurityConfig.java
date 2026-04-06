@@ -4,107 +4,66 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthTokenFilter authenticationFilter;
 
-    private final String[] publicUrl = {"/",
-            "/register/**",
-            "/api/products/**",
-            "/register",
-            "/order-confirmation",
+    private final String[] publicUrl = {
             "/",
-            "/products/review",
-            "/home",
-            "/products/**",
-            "/forgot-password",
-            "/reset-password",
-            "/reset-password/**",
-            "/login",
-            "/login/**",
-            "/verify",
+            "/api/auth/**",
+            "/api/products/**",
             "/images/**",
             "/uploads/**",
-            "/src/**",
-            "/webjars/**",
-            "/resources/**",
-            "/assets/**",
-            "/css/**",
-            "/summernote/**",
-            "/js/**",
-            "/*.css",
-            "/*.js",
-            "/*.js.map",
-            "/fonts**", "/favicon.ico", "/resources/**", "/error"};
-
-
+            "/error",
+            "/favicon.ico"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        //http.requiresChannel( a-> a.anyRequest().requiresSecure());
-
         http
-                .csrf(csrf -> {
-                    csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                });
 
-        /*http.csrf(csrf -> {
-            csrf.disable();
-        }); */
-        http.cors(cors -> cors.disable());
+                .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(publicUrl).permitAll()
+                        .requestMatchers("/api/profile/**").authenticated()
+                        .requestMatchers("/api/checkout/**").authenticated()
+                        .anyRequest().authenticated()
+                );
 
-        http.authorizeHttpRequests(auth ->
-                auth.requestMatchers(publicUrl)
-                        .permitAll()
-                        .requestMatchers("/wishlist/add/**").authenticated()
-                        .requestMatchers("/profile/**").authenticated()
-                        .requestMatchers("/checkout/**").authenticated()
-                        .anyRequest().authenticated());
-
-        //http.authenticationProvider(new CustomAuthenticationProvider());
-
-        http.formLogin(formLogin ->
-                        formLogin.loginPage("/login")
-                                .failureUrl("/login?error")
-                                .defaultSuccessUrl("/home", true)
-                                .permitAll())
-                .logout(logout ->
-                        logout.permitAll()
-                                .logoutUrl("/logout")
-                                .logoutSuccessUrl("/login?logout")
-                                .invalidateHttpSession(true)// Oturumun geçerliliğini sonlandır
-                                .deleteCookies("JSESSIONID"));
-
-        //http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
-    /*@Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return authProvider;
-    } */
 }
