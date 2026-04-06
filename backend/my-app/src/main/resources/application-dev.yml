@@ -19,6 +19,13 @@ spring:
     multipart:
       max-file-size: 2MB
       max-request-size: 2MB
+app:
+  upload:
+    dir: uploads
+    max-size: 5MB
+  jwt:
+    secret: ${JWT_SECRET:default_very_long_secret_key_for_dev_only}
+    expiration: ${JWT_EXPIRATION:86400000}
 
 #logging:
 #  level:

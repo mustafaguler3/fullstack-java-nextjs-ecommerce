@@ -3,6 +3,7 @@ package com.example.my_app.service.impl;
 
 import com.example.my_app.domain.Product;
 import com.example.my_app.dto.ProductDTO;
+import com.example.my_app.exception.ApiException;
 import com.example.my_app.repository.ProductRepository;
 import com.example.my_app.response.ApiResponse;
 import com.example.my_app.service.ProductService;
@@ -30,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
         if (products.isEmpty()) {
             log.warn("No products found in database");
+            throw new ApiException("Product not found", HttpStatus.NOT_FOUND);
         }
 
         log.info(productRepository.count() + " product counts:");

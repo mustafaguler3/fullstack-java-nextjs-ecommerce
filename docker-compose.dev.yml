@@ -27,12 +27,17 @@ services:
     container_name: ecommerce_backend
     ports:
       - "8080:8080"
+    volumes:
+      - ./backend/my-app/uploads:/app/uploads
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce_db?createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=1234
       - SPRING_PROFILES_ACTIVE=dev
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQLDialect
+      - APP_UPLOAD_DIR=/app/uploads
+      - JWT_SECRET=MGSTORE_SECURE_KEY_2026_MUSTAFA_DEVELOPMENT_BACKEND_SPRING_BOOT_JWT_TOKEN_512_BITS
+      - JWT_EXPIRATION=86400000
     depends_on:
       db:
         condition: service_healthy
