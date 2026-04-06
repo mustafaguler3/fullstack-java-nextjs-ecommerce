@@ -21,10 +21,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-[#0f172a] px-4 py-12">
-<<<<<<< HEAD
-=======
-      {/* Glow Effects */}
->>>>>>> ad3bff1 (feat: setup jwt auth, dynamic navbar and product service)
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-emerald-500/10 blur-[100px] rounded-full"></div>
         <div className="absolute bottom-[20%] left-[10%] w-[30%] h-[30%] bg-blue-500/10 blur-[100px] rounded-full"></div>

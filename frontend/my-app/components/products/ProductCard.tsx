@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Product } from '@/types/product';
-import { ShoppingCart, Eye, Heart, X } from 'lucide-react'; 
-import { useState } from 'react';
+import { Product } from "@/types/product";
+import { ShoppingCart, Eye, Heart, X, Zap } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface Props {
   product: Product;
@@ -12,133 +12,177 @@ export default function ProductCard({ product }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const formattedPrice = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isModalOpen]);
+
+  const formattedPrice = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
   }).format(product.price);
 
   return (
     <>
-      {/* --- KARANLIK TEMA ANA KART --- */}
-      <div className="group relative bg-slate-900/40 backdrop-blur-md border border-slate-800 rounded-2xl p-4 shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 ease-in-out overflow-hidden">
-        
-        {/* Favori Kalp - Daha Şeffaf Koyu Tema Uyumu */}
-        <button 
+      <div className="group relative bg-slate-900 border border-white/5 rounded-3xl p-4 shadow-2xl hover:border-blue-500/30 hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-500 ease-in-out overflow-hidden backdrop-blur-sm">
+        <button
           onClick={() => setIsFavorite(!isFavorite)}
-          className={`absolute top-4 right-4 z-10 p-2.5 bg-slate-800/80 backdrop-blur-md rounded-full shadow-lg transition-all duration-300 hover:scale-110 border border-slate-700 ${
-            isFavorite ? 'text-red-500 fill-red-500 border-red-500/20' : 'text-slate-400 hover:text-red-500'
+          className={`absolute top-5 right-5 z-10 p-2.5 bg-slate-800 rounded-full shadow-inner transition-all duration-300 hover:scale-110 border border-white/5 ${
+            isFavorite
+              ? "text-red-500 fill-red-500 border-red-500/20"
+              : "text-slate-500 hover:text-red-500 hover:border-red-500/20"
           }`}
         >
-          <Heart size={18} strokeWidth={2.5} />
+          <Heart size={16} strokeWidth={3} />
         </button>
 
-        {/* Görsel Alanı */}
-        <div className="relative h-52 bg-slate-800/50 rounded-xl mb-4 flex items-center justify-center overflow-hidden border border-slate-700/50">
+        <div className="relative h-56 bg-slate-800 rounded-2xl mb-5 flex items-center justify-center overflow-hidden border border-white/5 group-hover:border-blue-500/20 transition-colors duration-500">
           {product.imageUrl ? (
-            <img 
-              src={product.imageUrl} 
-              alt={product.name} 
-              className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-in-out"
+            <img
+              src={`http://localhost:8080${product.imageUrl}`}
+              alt={product.name}
+              className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-700 ease-out"
             />
           ) : (
-            <div className="flex flex-col items-center gap-2">
-               <span className="text-slate-600 font-bold tracking-tighter text-xs uppercase">No Visual Found</span>
+            <div className="flex flex-col items-center gap-2 text-slate-600">
+              <Zap size={24} className="opacity-50" />
+              <span className="text-[10px] font-black uppercase tracking-widest italic">
+                No Part Image
+              </span>
             </div>
           )}
-          
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <button 
+
+          {/* Hoverda Açılan Göz İkonu Katmanı */}
+          <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+            <button
               onClick={() => setIsModalOpen(true)}
-              className="p-3 bg-blue-600 text-white rounded-full shadow-2xl scale-75 group-hover:scale-100 transition-all duration-300 hover:bg-blue-500"
+              className="p-4 bg-white text-slate-950 rounded-full hover:bg-blue-500 hover:text-white transition-colors shadow-2xl scale-75 group-hover:scale-100 duration-500 ease-out"
             >
-               <Eye size={22} />
+              <Eye size={20} />
             </button>
           </div>
         </div>
 
-        {/* İçerik */}
         <div className="space-y-3">
-          <h3 className="font-bold text-slate-100 text-lg leading-tight line-clamp-1 group-hover:text-blue-400 transition-colors">
-            {product.name}
-          </h3>
-          
-          <p className="text-xs text-slate-400 line-clamp-2 min-h-[32px] font-medium leading-relaxed">
+          <div className="flex justify-between items-start gap-3">
+            <h3 className="font-extrabold text-white text-lg leading-tight line-clamp-1 group-hover:text-blue-400 transition-colors uppercase italic tracking-tight">
+              {product.name}
+            </h3>
+            <span className="text-[9px] bg-blue-500/10 text-blue-400 px-2 py-1 rounded-md font-bold border border-blue-500/20 whitespace-nowrap">
+              ID: {product.id}
+            </span>
+          </div>
+
+          <p className="text-xs text-slate-500 line-clamp-2 min-h-[32px] font-medium leading-relaxed">
             {product.description}
           </p>
 
-          <div className="pt-2 flex justify-between items-center border-t border-slate-800">
+          <div className="pt-3 flex justify-between items-center mt-3 border-t border-white/5">
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Price Tag</span>
-              <span className="text-xl font-black text-white">{formattedPrice}</span>
+              <span className="text-[9px] text-slate-600 uppercase font-black tracking-widest">
+                Price
+              </span>
+              <span className="text-2xl font-black text-emerald-400 tracking-tighter">
+                {formattedPrice}
+              </span>
             </div>
 
-            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-emerald-600 text-white px-4 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:shadow-blue-500/30 active:scale-95 transition-all">
-              <ShoppingCart size={18} />
-              <span className="text-xs">BUY</span>
+            <button className="flex items-center gap-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-3 rounded-xl font-bold text-xs hover:saturate-150 active:scale-95 transition-all duration-200 overflow-hidden relative group/btn shadow-lg shadow-blue-600/10">
+              <ShoppingCart size={16} />
+              <span className="font-black uppercase tracking-widest text-[10px]">
+                Add
+              </span>
+
+              <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-500 skew-x-12" />
             </button>
           </div>
         </div>
-        
-        {/* Stok Badge - Koyu Tema Uyumu */}
+
         {product.stockQuantity < 5 && (
-          <span className="absolute top-4 left-4 bg-orange-500/10 text-orange-400 border border-orange-500/20 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter backdrop-blur-md">
+          <span className="absolute top-5 left-5 bg-orange-500/10 text-orange-400 text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-widest shadow-xl border border-orange-500/20 animate-pulse">
             Low Stock
           </span>
         )}
       </div>
 
-      {/* --- MODAL (DETAYLAR) - KOYU TEMA --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fadeIn" onClick={() => setIsModalOpen(false)}>
-          <div className="relative bg-slate-900 border border-slate-800 rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-scaleIn" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-[9999] flex justify-center bg-slate-950/90 backdrop-blur-md animate-fadeIn overflow-y-auto pt-24 pb-12 px-4 md:px-8"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            className="relative bg-slate-900 rounded-[3rem] w-full max-w-6xl h-fit min-h-[500px] shadow-[0_0_100px_-20px_rgba(0,0,0,0.5)] p-8 md:p-16 animate-scaleIn border border-white/5 mb-12"
+            onClick={(e) => e.stopPropagation()}
+          >
             
-            <button 
+            <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 z-20 p-2.5 bg-slate-800 rounded-full text-slate-400 hover:text-white hover:bg-slate-700 transition"
+              className="absolute top-6 right-6 md:top-10 md:right-10 p-4 bg-slate-800/80 rounded-full text-slate-400 hover:bg-white hover:text-slate-900 transition-all border border-white/5 z-20"
             >
-              <X size={20} />
+              <X size={20} strokeWidth={3} />
             </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 h-full">
-              {/* Sol: Görsel */}
-              <div className="bg-slate-950/50 flex items-center justify-center p-8 border-b md:border-b-0 md:border-r border-slate-800">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20">
+    
+              <div className="bg-slate-800/30 rounded-[2.5rem] aspect-square flex items-center justify-center p-8 border border-white/5">
                 {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} className="object-contain max-h-[350px] w-full group-hover:scale-105 transition-transform" />
+                  <img
+                    src={`http://localhost:8080${product.imageUrl}`}
+                    alt={product.name}
+                    className="object-contain w-full h-full drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                  />
                 ) : (
-                  <span className="text-slate-800 text-6xl font-black">MG</span>
+                  <Zap size={64} className="text-slate-800" />
                 )}
               </div>
 
-              {/* Sağ: Detaylar */}
-              <div className="p-8 md:p-12 flex flex-col justify-between bg-slate-900/50">
-                <div>
-                  <h2 className="text-3xl font-black text-white mb-2 tracking-tighter uppercase italic">
+              <div className="flex flex-col justify-center space-y-8">
+                <div className="space-y-4">
+                  <span className="text-blue-500 font-black text-[10px] uppercase tracking-[0.4em]">
+                    Hardware Engine
+                  </span>
+                  <h2 className="text-5xl md:text-6xl font-black text-white italic uppercase tracking-tighter leading-none">
                     {product.name}
                   </h2>
-                  <div className="text-4xl font-black bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent mb-6">
-                    {formattedPrice}
-                  </div>
-                  
-                  <p className="text-slate-400 leading-relaxed mb-8 text-sm font-medium">
-                    {product.description}
+                  <p className="text-5xl font-black text-emerald-400 tracking-tighter">
+                    ${product.price}
                   </p>
+                </div>
 
-                  <div className="space-y-4 pt-6 border-t border-slate-800">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 text-xs font-bold uppercase">Availability</span>
-                      <span className="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                        {product.stockQuantity} IN STOCK
-                      </span>
-                    </div>
+                <p className="text-slate-400 text-sm md:text-base font-medium leading-relaxed max-w-md">
+                  {product.description}
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-8">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                      Stock
+                    </p>
+                    <p className="text-white font-bold">
+                      {product.stockQuantity} Units
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">
+                      Category
+                    </p>
+                    <p className="text-white font-bold">Pro Gear</p>
                   </div>
                 </div>
 
-                <button className="mt-10 w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-500 to-emerald-500 text-white px-8 py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-blue-500/20 hover:shadow-emerald-500/20 transition-all hover:-translate-y-1 active:scale-[0.98]">
-                  <ShoppingCart size={22} />
-                  Add to Gear List
-                </button>
+                <div className="pt-6">
+                  <button className="w-full bg-white text-slate-950 py-5 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-blue-500 hover:text-white transition-all shadow-xl active:scale-95">
+                    Add to Shopping Cart
+                  </button>
+                </div>
               </div>
             </div>
           </div>

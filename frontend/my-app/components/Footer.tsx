@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { FaFacebook, FaTwitter, FaInstagram, FaGithub } from 'react-icons/fa';
-import { Send, Mail } from 'lucide-react';
+import { Send } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -10,6 +10,7 @@ export default function Footer() {
 
       <div className="container mx-auto px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-16">
+          
           <div className="space-y-6">
             <div className="text-3xl font-black tracking-tighter group inline-block">
               <Link href="/" className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent italic hover:saturate-150 transition-all duration-500">

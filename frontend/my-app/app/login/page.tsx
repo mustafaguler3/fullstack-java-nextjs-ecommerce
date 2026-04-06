@@ -38,6 +38,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-[#0f172a] px-4">
+     
       
       <div className="w-full max-w-md p-8 space-y-8 rounded-3xl bg-slate-900/50 backdrop-blur-xl border border-slate-800 shadow-2xl relative z-10">
         <div className="text-center">
