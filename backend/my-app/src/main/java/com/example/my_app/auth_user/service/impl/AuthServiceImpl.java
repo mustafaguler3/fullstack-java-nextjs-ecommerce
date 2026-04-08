@@ -17,6 +17,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    public void register(RegisterRequest request) {
+    public void register(RegisterRequest request, MultipartFile imageFile) throws IOException {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already in use!");
@@ -54,14 +61,28 @@ public class AuthServiceImpl implements AuthService {
 
         User user = new User();
         user.setUsername(request.getUsername());
+        user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
         user.setDescription(request.getDescription());
         user.setIsEnabled(true);
         user.setRole(UserRole.ROLE_CUSTOMER);
 
-        userRepository.save(user);
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String uploadDir = Paths.get(System.getProperty("user.dir"), "uploads", "profile").toString();
+            Files.createDirectories(Paths.get(uploadDir));
 
+            String imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            Path path = Paths.get(uploadDir, imageName);
+            imageFile.transferTo(path.toFile());
+
+            user.setProfilePicture("/uploads/profile/" + imageName);
+        } else {
+            user.setProfilePicture("/uploads/profile/default-avatar.png");
+        }
+
+        userRepository.save(user);
 
     }
 }
