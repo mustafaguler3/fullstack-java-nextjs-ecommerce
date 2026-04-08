@@ -2,6 +2,8 @@
 import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import userService from "@/services/userService";
+import { User as UserType } from "@/types/User";
 import {
   ShoppingBag,
   User,
@@ -15,25 +17,8 @@ import {
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userData, setUserData] = useState<UserType | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleOutsideClick = () => {
-      setIsMenuOpen(false);
-    };
-
-    window.addEventListener("click", handleOutsideClick);
-    return () => {
-      window.removeEventListener("click", handleOutsideClick);
-    };
-  }, [isMenuOpen]);
-
-  const toggleMenu = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   const isLoggedIn = useSyncExternalStore(
     (callback) => {
@@ -44,6 +29,47 @@ export default function Navbar() {
     () => false,
   );
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchUserData = async () => {
+      if (isLoggedIn) {
+        try {
+          const res = await userService.userAccount();
+          if (isMounted) {
+            setUserData(res.data);
+          }
+        } catch (error) {
+          if (isMounted) {
+            setUserData(null);
+          }
+        }
+      } else {
+        if (isMounted) {
+          setUserData(null);
+        }
+      }
+    };
+
+    fetchUserData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleOutsideClick = () => setIsMenuOpen(false);
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [isMenuOpen]);
+
+  const toggleMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     router.push("/login");
@@ -52,6 +78,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-[100] flex justify-between items-center px-8 py-4 bg-slate-950/80 backdrop-blur-md text-white shadow-2xl border-b border-white/5">
+     
       <div className="flex items-center gap-12">
         <div className="text-2xl font-black tracking-tighter group">
           <Link
@@ -61,7 +88,6 @@ export default function Navbar() {
             MG STORE
           </Link>
         </div>
-
         <div className="hidden md:flex gap-8 items-center font-bold text-[11px] uppercase tracking-[0.2em] text-slate-400">
           <Link
             href="/"
@@ -104,14 +130,12 @@ export default function Navbar() {
               />
               <span>Login</span>
             </Link>
-
             <Link
               href="/register"
               className="relative inline-flex items-center justify-center px-6 py-2.5 overflow-hidden font-black text-[10px] uppercase tracking-widest text-white bg-slate-800 rounded-xl group hover:bg-blue-600 shadow-xl border border-white/5"
             >
               <span className="relative flex items-center gap-2">
-                <User size={14} />
-                Register
+                <User size={14} /> Register
               </span>
             </Link>
           </div>
@@ -121,8 +145,19 @@ export default function Navbar() {
               onClick={toggleMenu}
               className="flex items-center gap-2 p-1.5 bg-slate-900 rounded-full border border-white/10 hover:border-blue-500/50 transition-all active:scale-95"
             >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-emerald-500 flex items-center justify-center font-black text-xs text-white shadow-inner">
-                M
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-emerald-500 p-[1px] shadow-inner overflow-hidden flex items-center justify-center">
+                {userData?.profilePicture ? (
+                  <img
+                    src={`http://localhost:8080${userData.profilePicture}`}
+                    alt="User"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span className="font-black text-xs text-white">
+                    {userData?.fullName?.[0].toUpperCase() ||
+                      userData?.username?.[0].toUpperCase()}
+                  </span>
+                )}
               </div>
               <ChevronDown
                 size={14}
@@ -137,18 +172,17 @@ export default function Navbar() {
                     Operator
                   </p>
                   <p className="text-xs font-bold text-white mt-1 truncate">
-                    Mustafa
+                    {userData?.fullName || userData?.username || "Mustafa"}
                   </p>
                 </div>
 
                 <Link
-                  href="/profile"
+                  href="/user/profile"
                   className="flex items-center gap-3 px-4 py-2.5 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all group"
                 >
                   <User size={16} className="group-hover:text-blue-400" />
                   Profile Details
                 </Link>
-
                 <Link
                   href="/orders"
                   className="flex items-center gap-3 px-4 py-2.5 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all group"
@@ -156,7 +190,6 @@ export default function Navbar() {
                   <Package size={16} className="group-hover:text-emerald-400" />
                   Order History
                 </Link>
-
                 <Link
                   href="/settings"
                   className="flex items-center gap-3 px-4 py-2.5 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all group"
@@ -169,13 +202,12 @@ export default function Navbar() {
                 </Link>
 
                 <div className="h-px bg-white/5 my-2 mx-2"></div>
-
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-[11px] font-black text-red-400 hover:bg-red-500/10 rounded-xl transition-all uppercase tracking-widest"
                 >
                   <LogOut size={16} />
-                  Terminate Session
+                  Logout
                 </button>
               </div>
             )}

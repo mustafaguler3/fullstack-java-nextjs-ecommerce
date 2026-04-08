@@ -1,6 +1,6 @@
 package com.example.my_app.response;
 
-import com.example.my_app.dto.UserDTO;
+import com.example.my_app.auth_user.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
