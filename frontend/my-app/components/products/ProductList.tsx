@@ -5,7 +5,6 @@ import ProductCard from '@/components/products/ProductCard';
 import { Product } from '@/types/Product';
 
 
-
 export default function ProductList() {
   const { data: products, isLoading, error, refetch } = useProducts();
 
