@@ -2,7 +2,8 @@
 
 import { useProducts } from '@/hooks/useProducts';
 import ProductCard from '@/components/products/ProductCard';
-import { Product } from '@/types/Product';
+import { Product } from '@/types/product';
+
 
 export default function ProductList() {
   const { data: products, isLoading, error, refetch } = useProducts();
