@@ -7,11 +7,14 @@ import com.example.my_app.response.AuthResponse;
 import com.example.my_app.auth_user.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -31,15 +34,22 @@ public class AuthController {
                 .build());
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<Response<String>> registerUser(@RequestBody RegisterRequest signUpRequest) {
+    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Response<?>> register(
+            @RequestPart("request") @Valid RegisterRequest request,
+            BindingResult bindingResult,
+            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
 
-        authService.register(signUpRequest);
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(
+                    Response.builder()
+                            .message(bindingResult.getFieldError().getDefaultMessage())
+                            .build()
+            );
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(Response.<String>builder()
-                .statusCode(201)
-                .message("User registered to MG STORE core database")
-                .data("Registration Successful")
-                .build());
+        authService.register(request, imageFile);
+
+        return ResponseEntity.ok(Response.builder().message("User registered!").build());
     }
 }

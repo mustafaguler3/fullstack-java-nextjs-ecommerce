@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(500)
                 .error("Internal Server Error")
-                .message("Sistemsel bir hata oluştu: " + ex.getMessage())
+                .message("A system error occurred.: " + ex.getMessage())
                 .path(request.getRequestURI())
                 .className(stackTrace.getClassName())
                 .methodName(stackTrace.getMethodName())
