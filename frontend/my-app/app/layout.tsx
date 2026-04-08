@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: "MG STORE | Premium Dev Gear",
@@ -21,6 +22,7 @@ export default function RootLayout({
           <main>{children}</main>
           <Footer />
         </Providers>
+        <Toaster position="top-right" richColors expand={false} />
       </body>
     </html>
   );
