@@ -31,6 +31,7 @@ public class SecurityConfig {
     private final String[] publicUrl = {
             "/",
             "/api/auth/**",
+            "/api/users/**",
             "/api/products/**",
             "/images/**",
             "/uploads/**",

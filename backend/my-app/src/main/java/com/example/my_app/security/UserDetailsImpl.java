@@ -1,14 +1,12 @@
 package com.example.my_app.security;
 
-import com.example.my_app.domain.User;
+import com.example.my_app.auth_user.domain.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-
-import static java.util.stream.Collectors.toList;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -21,6 +19,10 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+    }
+
+    public Long getId() {
+        return user.getId();
     }
 
     public User getUser() {
