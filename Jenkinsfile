@@ -42,13 +42,13 @@ pipeline {
 
                 stage('Backend Tests') {
                     steps {
-                        sh "docker compose ${DOCKER_COMPOSE_DEV} run --rm backend ./mvnw test"
+                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm backend ./mvnw test"
                     }
                 }
 
                 stage('Frontend Build') {
                     steps {
-                        sh "docker compose ${DOCKER_COMPOSE_DEV} run --rm frontend sh -c 'npm ci && npm run build'"
+                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm frontend sh -c 'npm ci && npm run build'"
                     }
                 }
             }
