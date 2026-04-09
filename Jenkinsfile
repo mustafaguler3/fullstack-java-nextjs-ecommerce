@@ -107,15 +107,19 @@ pipeline {
                 echo "Health check failed!"
                 exit 1
                 '''
-            }
+             }
         }
 
-        stage('Sync to GitLab') {
+         stage('Sync to GitLab') {
     steps {
         withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
             sh """
-            git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com:mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-            git push gitlab devops/jenkins-setup
+                
+                current_branch=\$(git rev-parse --abbrev-ref HEAD)
+                
+                git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
+                
+                git push gitlab \$current_branch
             """
         }
     }
