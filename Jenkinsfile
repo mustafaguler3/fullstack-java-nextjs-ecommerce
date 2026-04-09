@@ -8,10 +8,8 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
-        DOCKER_COMPOSE_PROD = '-f docker-compose.prod.yml'
         DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-backend:latest'
         DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-frontend:latest'
-        SERVER_IP = 'your-server-ip'
     }
 
     options {
