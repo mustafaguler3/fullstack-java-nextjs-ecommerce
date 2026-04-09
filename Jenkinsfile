@@ -7,6 +7,7 @@ pipeline {
     }
 
     environment {
+        DOCKER_COMPOSE = 'docker compose'
         DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
         DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-backend:latest'
         DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-frontend:latest'
@@ -108,13 +109,14 @@ pipeline {
              }
         }
 
-         stage('Sync to GitLab') {
-            steps {
-               withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
-                sh """
-                  git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-                  git push gitlab HEAD:refs/heads/\$(git rev-parse --abbrev-ref HEAD) --force
-                 """
+          stage('Sync to GitLab') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
+            sh """
+                BRANCH_NAME=\$(git rev-parse --abbrev-ref HEAD)
+                git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
+                git push gitlab HEAD:refs/heads/\${BRANCH_NAME} --force
+            """
         }
     }
 }
