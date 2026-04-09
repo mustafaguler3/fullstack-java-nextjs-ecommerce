@@ -112,12 +112,8 @@ pipeline {
     steps {
         withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
             sh """
-                
-                current_branch=\$(git rev-parse --abbrev-ref HEAD)
-                
                 git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-                
-                git push gitlab \$current_branch
+                git push gitlab HEAD:refs/heads/\$(git rev-parse --abbrev-ref HEAD) --force
             """
         }
     }
