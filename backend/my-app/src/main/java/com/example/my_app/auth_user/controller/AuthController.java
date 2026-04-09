@@ -6,15 +6,16 @@ import com.example.my_app.response.Response;
 import com.example.my_app.response.AuthResponse;
 import com.example.my_app.auth_user.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import java.io.IOException;
+import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -34,22 +35,15 @@ public class AuthController {
                 .build());
     }
 
-    @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/register")
     public ResponseEntity<Response<?>> register(
-            @RequestPart("request") @Valid RegisterRequest request,
-            BindingResult bindingResult,
-            @RequestPart(value = "image", required = false) MultipartFile imageFile) throws IOException {
+            @Valid @RequestBody RegisterRequest request)  {
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(
-                    Response.builder()
-                            .message(bindingResult.getFieldError().getDefaultMessage())
-                            .build()
-            );
-        }
+        authService.register(request);
 
-        authService.register(request, imageFile);
-
-        return ResponseEntity.ok(Response.builder().message("User registered!").build());
+        return ResponseEntity.ok(Response.<AuthResponse>builder()
+                .statusCode(200)
+                .message("User registered")
+                .build());
     }
 }
