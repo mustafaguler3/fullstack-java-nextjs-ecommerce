@@ -48,7 +48,7 @@ pipeline {
 
                 stage('Frontend Build') {
                     steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm frontend sh -c 'npm ci && npm run build'"
+                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm --no-deps frontend sh -c 'npm ci && npm run build'"
                     }
                 }
             }
