@@ -2,7 +2,6 @@
 ### Example user template
 
 .env*
-docker-compose.dev.yml
 
 # IntelliJ project files
 .idea

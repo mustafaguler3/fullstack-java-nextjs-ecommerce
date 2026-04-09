@@ -6,7 +6,6 @@ import { Send } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="bg-slate-950 text-white pt-20 pb-10 border-t border-white/5 relative overflow-hidden font-sans">
-
       <div className="absolute bottom-0 right-0 w-[30%] h-[30%] bg-blue-500/5 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="container mx-auto px-8 relative z-10">
@@ -23,7 +22,6 @@ export default function Footer() {
               High-performance gear for high-performance engineers. We curate the best tools to elevate your <span className="text-blue-400 font-bold">digital workspace.</span>
             </p>
           </div>
-
           <div>
             <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 mb-8">Explore</h3>
             <ul className="space-y-4 text-sm font-bold text-slate-400">
@@ -32,7 +30,6 @@ export default function Footer() {
               <li><Link href="/categories" className="hover:text-blue-400 transition-colors flex items-center gap-2 group"><span className="w-0 group-hover:w-2 h-0.5 bg-blue-500 transition-all"></span>Categories</Link></li>
             </ul>
           </div>
-
           <div>
             <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 mb-8">Support</h3>
             <ul className="space-y-4 text-sm font-bold text-slate-400">
@@ -41,7 +38,6 @@ export default function Footer() {
               <li><Link href="/returns" className="hover:text-white transition-colors">Returns</Link></li>
             </ul>
           </div>
-
           <div className="space-y-8">
             <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-500 mb-2">Join the Fleet</h3>
             
@@ -55,7 +51,6 @@ export default function Footer() {
                 <Send size={16} className="text-white" />
               </button>
             </div>
-
             <div className="flex space-x-4">
               {[
                 { icon: <FaFacebook size={18} />, href: "#", hover: "hover:text-blue-500" },
@@ -76,7 +71,6 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
         <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 gap-6">
           <p>© {new Date().getFullYear()} MG STORE. Crafted with passion by <span className="text-blue-400">Mustafa Guler</span></p>
           <div className="flex gap-8">

@@ -27,7 +27,7 @@ app:
     secret: ${JWT_SECRET:default_very_long_secret_key_for_dev_only}
     expiration: ${JWT_EXPIRATION:86400000}
 
-#logging:
-#  level:
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

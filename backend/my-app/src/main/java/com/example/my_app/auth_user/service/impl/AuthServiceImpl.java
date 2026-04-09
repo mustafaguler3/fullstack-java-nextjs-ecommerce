@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    public void register(RegisterRequest request, MultipartFile imageFile) throws IOException {
+    public void register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already in use!");
@@ -63,24 +63,16 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(request.getUsername());
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("Passwords do not match!");
+        }
+
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setPhoneNumber(request.getPhoneNumber());
         user.setDescription(request.getDescription());
         user.setIsEnabled(true);
         user.setRole(UserRole.ROLE_CUSTOMER);
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String uploadDir = Paths.get(System.getProperty("user.dir"), "uploads", "profile").toString();
-            Files.createDirectories(Paths.get(uploadDir));
-
-            String imageName = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-            Path path = Paths.get(uploadDir, imageName);
-            imageFile.transferTo(path.toFile());
-
-            user.setProfilePicture("/uploads/profile/" + imageName);
-        } else {
-            user.setProfilePicture("/uploads/profile/default-avatar.png");
-        }
 
         userRepository.save(user);
 
