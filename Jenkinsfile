@@ -42,7 +42,7 @@ pipeline {
 
                 stage('Backend Tests') {
                     steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm backend ./mvnw test"
+                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm --no-deps backend ./mvnw test"
                     }
                 }
 
