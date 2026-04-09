@@ -40,9 +40,10 @@ services:
       - APP_UPLOAD_DIR=/app/uploads
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/ecommerce_db?createDatabaseIfNotExist=true
     volumes:
-      - /Users/mustafa/Desktop/ecommerce-app/backend/my-app/uploads:/app/uploads:rw
+      - uploads_data:/app/uploads
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - ecommerce-network
 
@@ -58,15 +59,33 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8080/api
       - NEXT_TELEMETRY_DISABLED=1
     working_dir: /app
-    command: npm run dev
+    #command: sh -c "npm install && npm run build"
     depends_on:
       - backend
+    networks:
+      - ecommerce-network
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: mgstore_jenkins
+    restart: always
+    privileged: true
+    user: root
+    ports:
+      - '8081:8080'
+      - '50000:50000'
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
     networks:
       - ecommerce-network
 
 volumes:
   ecommerce-app_mysql_data:
     name: ecommerce-app_mysql_data
+  jenkins_home:
+  uploads_data:
+
 networks:
   ecommerce-network:
     driver: bridge

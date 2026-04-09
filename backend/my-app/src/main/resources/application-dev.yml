@@ -27,6 +27,12 @@ app:
     secret: ${JWT_SECRET:default_very_long_secret_key_for_dev_only}
     expiration: ${JWT_EXPIRATION:86400000}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
