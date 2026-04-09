@@ -85,7 +85,7 @@ const ProfilePage = () => {
       if (selectedFile) {
         data.append("imageFile", selectedFile);
       }
-      
+
       const updateData: any = {
         username: formData.username,
         fullName: formData.fullName,
@@ -100,12 +100,11 @@ const ProfilePage = () => {
         localStorage.setItem("token", token);
         return;
       }
-      
 
       await fetchUserAccount();
       toast.success("Profile synchronized successfully!", { id: loadingToast });
       setIsEditing(false);
-      
+
       window.dispatchEvent(new Event("storage"));
     } catch (error) {
       console.error("Update error:", error);
@@ -234,7 +233,15 @@ const ProfilePage = () => {
                       onClick={() => isEditing && fileInputRef.current?.click()}
                     >
                       <img
-                        src={previewUrl || "/default-avatar.png"}
+                        src={
+                          previewUrl ||
+                          user?.profilePicture ||
+                          "/images/default-avatar.png"
+                        }
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/images/default-avatar.png";
+                        }}
                         className="w-full h-full object-cover"
                       />
                       {isEditing && (
