@@ -30,8 +30,10 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                retry(2) {
-                    sh "docker compose ${DOCKER_COMPOSE_DEV} build"
+                script {
+                    docker.withTool('docker') { 
+                        sh "docker compose ${DOCKER_COMPOSE_DEV} build"
+                    }
                 }
             }
         }
@@ -107,6 +109,17 @@ pipeline {
                 '''
             }
         }
+
+        stage('Sync to GitLab') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
+            sh """
+            git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com:mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
+            git push gitlab devops/jenkins-setup
+            """
+        }
+    }
+}
     }
 
     post {
