@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_COMPOSE = 'docker-compose'
+        DOCKER_COMPOSE = 'docker compose'
         DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
         DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-app-backend:latest'
         DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-app-frontend:latest'
@@ -42,13 +42,13 @@ pipeline {
 
                 stage('Backend Tests') {
                     steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm backend ./mvnw test"
+                        sh "docker compose ${DOCKER_COMPOSE_DEV} run --rm backend ./mvnw test"
                     }
                 }
 
                 stage('Frontend Build') {
                     steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm frontend sh -c 'npm ci && npm run build'"
+                        sh "docker compose ${DOCKER_COMPOSE_DEV} run --rm frontend sh -c 'npm ci && npm run build'"
                     }
                 }
             }
@@ -121,7 +121,7 @@ pipeline {
 
     post {
         always {
-            sh "docker compose ${DOCKER_COMPOSE_DEV} down -v || true"
+            sh "docker compose ${DOCKER_COMPOSE_DEV} down || true"
             sh "docker image prune -f"
         }
 
