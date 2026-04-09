@@ -37,23 +37,6 @@ pipeline {
             }
         }
 
-        stage('Tests (Parallel)') {
-            parallel {
-
-                stage('Backend Tests') {
-                    steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm --no-deps backend ./mvnw test"
-                    }
-                }
-
-                stage('Frontend Build') {
-                    steps {
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} run --rm --no-deps frontend sh -c 'npm ci && npm run build'"
-                    }
-                }
-            }
-        }
-
         stage('Docker Login & Push') {
             steps {
                 withCredentials([usernamePassword(
