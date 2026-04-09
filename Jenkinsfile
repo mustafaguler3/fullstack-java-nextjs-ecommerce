@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_COMPOSE = 'docker compose'
+        DOCKER_COMPOSE = 'docker-compose'
         DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
         DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-app-backend:latest'
         DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-app-frontend:latest'
@@ -82,8 +82,8 @@ pipeline {
                     ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@${SERVER_IP} '
                         docker pull ${DOCKER_IMAGE_BACKEND}
                         docker pull ${DOCKER_IMAGE_FRONTEND}
-                        docker compose ${DOCKER_COMPOSE_PROD} down
-                        docker compose ${DOCKER_COMPOSE_PROD} up -d
+                        docker-compose ${DOCKER_COMPOSE_PROD} down
+                        docker-compose ${DOCKER_COMPOSE_PROD} up -d
                     '
                     """
                 }
