@@ -7,10 +7,10 @@ pipeline {
     }
 
     environment {
-        DOCKER_COMPOSE = 'docker compose'
+        DOCKER_COMPOSE = 'docker-compose'
         DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
-        DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-backend:latest'
-        DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-frontend:latest'
+        DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-app-backend:latest'
+        DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-app-frontend:latest'
     }
 
     options {
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') { 
-                        sh "docker-compose ${DOCKER_COMPOSE_DEV} build"
+                        sh "${DOCKER_COMPOSE} ${DOCKER_COMPOSE_DEV} build"
                     }
                 }
             }
