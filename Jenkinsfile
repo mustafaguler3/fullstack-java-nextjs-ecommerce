@@ -109,12 +109,12 @@ pipeline {
         }
 
          stage('Sync to GitLab') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
-            sh """
-                git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-                git push gitlab HEAD:refs/heads/\$(git rev-parse --abbrev-ref HEAD) --force
-            """
+            steps {
+               withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
+                sh """
+                  git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
+                  git push gitlab HEAD:refs/heads/\$(git rev-parse --abbrev-ref HEAD) --force
+                 """
         }
     }
 }
