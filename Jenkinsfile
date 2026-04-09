@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') { 
-                        sh "docker compose ${DOCKER_COMPOSE_DEV} build"
+                        sh "docker-compose ${DOCKER_COMPOSE_DEV} build"
                     }
                 }
             }
@@ -109,13 +109,15 @@ pipeline {
              }
         }
 
-          stage('Sync to GitLab') {
+            stage('Sync to GitLab') {
     steps {
         withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
             sh """
-                BRANCH_NAME=\$(git rev-parse --abbrev-ref HEAD)
+                CURRENT_BRANCH=\$(git rev-parse --abbrev-ref HEAD)
+                
                 git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-                git push gitlab HEAD:refs/heads/\${BRANCH_NAME} --force
+                
+                git push gitlab HEAD:refs/heads/\$CURRENT_BRANCH --force
             """
         }
     }
