@@ -50,7 +50,10 @@ pipeline {
        stage('Integration Test') {
     steps {
         script {
-            sh "/usr/local/bin/docker-compose -f docker-compose.dev.yml up -d"
+            sh "docker run -d --name test-backend -p 8080:8080 mustafaguler4/ecommerce-app-backend:36"
+            sh "docker run -d --name test-frontend -p 3000:3000 mustafaguler4/ecommerce-app-frontend:36"
+            
+            sh "docker stop test-backend test-frontend && docker rm test-backend test-frontend"
         }
     }
 }
