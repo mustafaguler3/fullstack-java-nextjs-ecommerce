@@ -42,7 +42,8 @@ pipeline {
                             usernameVariable: 'USER',
                             passwordVariable: 'PASS'
                         )]) {
-                            sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                            sh "echo ${PASS} | docker login -u ${USER} --password"
+                            
                             sh "docker push ${BACKEND_IMAGE}:${TAG}"
                             sh "docker push ${FRONTEND_IMAGE}:${TAG}"
                         }
