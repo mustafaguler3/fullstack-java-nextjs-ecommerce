@@ -7,6 +7,7 @@ pipeline {
     }
 
     environment {
+        DOCKER_API_VERSION = '1.44'
         BACKEND_IMAGE = "mustafaguler4/ecommerce-app-backend"
         FRONTEND_IMAGE = "mustafaguler4/ecommerce-app-frontend"
         TAG = "${env.BUILD_NUMBER}"
