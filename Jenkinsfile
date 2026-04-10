@@ -7,6 +7,7 @@ pipeline {
     }
 
     environment {
+        DOCKER_API_VERSION = '1.44'
         BACKEND_IMAGE = "mustafaguler4/ecommerce-app-backend"
         FRONTEND_IMAGE = "mustafaguler4/ecommerce-app-frontend"
         TAG = "${env.BUILD_NUMBER}"
@@ -25,10 +26,8 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') {
-                        // Backend build
-                        sh "docker build -t ${BACKEND_IMAGE}:${TAG} ./backend/my-app"
-                        // Frontend build
-                        sh "docker build -t ${FRONTEND_IMAGE}:${TAG} ./frontend/my-app"
+                        sh "export DOCKER_API_VERSION=1.44 && docker build -t ${BACKEND_IMAGE}:${TAG} ./backend/my-app"
+                        sh "export DOCKER_API_VERSION=1.44 && docker build -t ${FRONTEND_IMAGE}:${TAG} ./frontend/my-app"
                     }
                 }
             }
@@ -39,8 +38,8 @@ pipeline {
                 script {
                     docker.withTool('docker') {
                         docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIAL}") {
-                            sh "docker push ${BACKEND_IMAGE}:${TAG}"
-                            sh "docker push ${FRONTEND_IMAGE}:${TAG}"
+                            sh "export DOCKER_API_VERSION=1.44 && docker push ${BACKEND_IMAGE}:${TAG}"
+                            sh "export DOCKER_API_VERSION=1.44 && docker push ${FRONTEND_IMAGE}:${TAG}"
                         }
                     }
                 }
@@ -50,10 +49,7 @@ pipeline {
 
     post {
         success {
-            echo "Congratulations Mustafa! Backend and frontend were successfully installed."
-        }
-        failure {
-            echo "Something went wrong, check the logs."
+            echo "Finally! Images have been uploaded: ${TAG}"
         }
     }
 }
