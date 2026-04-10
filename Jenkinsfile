@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') { 
-                        sh "${DOCKER_COMPOSE} ${DOCKER_COMPOSE_DEV} build"
+                        sh "${DOCKER_COMPOSE} ${DOCKER_COMPOSE_DEV} up --build"
                     }
                 }
             }
