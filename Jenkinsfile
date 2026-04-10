@@ -38,7 +38,7 @@ pipeline {
                 script {
                     docker.withTool('docker') {
                         withCredentials([usernamePassword(
-                            credentialsId: DOCKER_CREDENTIAL,
+                            credentialsId: 'dockerhub-creds',
                             usernameVariable: 'USER',
                             passwordVariable: 'PASS'
                         )]) {
