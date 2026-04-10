@@ -37,13 +37,7 @@ pipeline {
             steps {
                 script {
                     docker.withTool('docker') {
-                        withCredentials([usernamePassword(
-                            credentialsId: 'dockerhub-creds',
-                            usernameVariable: 'USER',
-                            passwordVariable: 'PASS'
-                        )]) {
-                            sh "echo ${PASS} | docker login -u ${USER} --password"
-                            
+                        docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
                             sh "docker push ${BACKEND_IMAGE}:${TAG}"
                             sh "docker push ${FRONTEND_IMAGE}:${TAG}"
                         }
