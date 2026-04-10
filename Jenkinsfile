@@ -47,25 +47,20 @@ pipeline {
         }
 
 
-        stage('Integration Test') {
-          steps {
-            script {
-              docker.withTool('docker') {
-                sh "docker compose -f docker-compose.dev.yml up -d || /usr/local/bin/docker-compose -f docker-compose.dev.yml up -d"
-                
-            }
+       stage('Integration Test') {
+    steps {
+        script {
+            sh "/usr/local/bin/docker-compose -f docker-compose.dev.yml up -d"
         }
     }
 }
     }
     post {
-        always {
-            script {
-                docker.withTool('docker') {
-                    sh "docker-compose -f docker-compose.dev.yml stop || true"
-                    sh "docker image prune -f"
-                }
-            }
+    always {
+        script {
+            sh "/usr/local/bin/docker-compose -f docker-compose.dev.yml stop || true"
+            sh "docker image prune -f"
         }
     }
+}
 }
