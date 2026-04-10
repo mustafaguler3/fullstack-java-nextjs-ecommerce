@@ -47,16 +47,15 @@ pipeline {
         }
 
         stage('Integration Test') {
-            steps {
-                script {
-                    docker.withTool('docker') {
-                        sh "docker-compose -f docker-compose.dev.yml up -d"
-                        sh "sleep 20"
-                        sh "curl -f http://localhost:8080/api/health || true"
-                    }
-                }
+          steps {
+            script {
+              docker.withTool('docker') {
+                sh "docker compose -f docker-compose.dev.yml up -d || /usr/local/bin/docker-compose -f docker-compose.dev.yml up -d"
+                
             }
         }
+    }
+}
     }
     post {
         always {
