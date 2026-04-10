@@ -2,118 +2,104 @@ pipeline {
     agent any
 
     tools {
-        jdk 'jdk17'
+        maven 'maven3'
         nodejs 'node20'
     }
 
     environment {
-        DOCKER_COMPOSE = 'docker-compose'
-        DOCKER_COMPOSE_DEV = '-f docker-compose.dev.yml'
-        DOCKER_IMAGE_BACKEND = 'mustafaguler4/ecommerce-app-backend:latest'
-        DOCKER_IMAGE_FRONTEND = 'mustafaguler4/ecommerce-app-frontend:latest'
-    }
-
-    options {
-        timestamps()
-        buildDiscarder(logRotator(numToKeepStr: '10'))
+        BACKEND_IMAGE = "mustafaguler4/ecommerce-app-backend"
+        FRONTEND_IMAGE = "mustafaguler4/ecommerce-app-frontend"
+        TAG = "${env.BUILD_NUMBER}"
+        DOCKER_CREDENTIAL = "dockerhub-creds"
+        SONAR_TOKEN = credentials('sonar-token-id')
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                deleteDir()
                 checkout scm
             }
         }
 
+        // ---------------- BACKEND ----------------
+        stage('Build Backend') {
+            steps {
+                dir('backend/my-app') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
+        // ---------------- FRONTEND ----------------
+        stage('Build Frontend') {
+            steps {
+                dir('frontend/my-app') {
+                    sh 'npm ci'
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        // ---------------- DOCKER BUILD ----------------
         stage('Docker Build') {
             steps {
-                script {
-                    docker.withTool('docker') { 
-                        sh "${DOCKER_COMPOSE} ${DOCKER_COMPOSE_DEV} up --build"
-                    }
-                }
+                sh "docker build -t ${BACKEND_IMAGE}:${TAG} ./backend/my-app"
+                sh "docker build -t ${FRONTEND_IMAGE}:${TAG} ./frontend/my-app"
             }
         }
 
-        stage('Docker Login & Push') {
+        // ---------------- DOCKER PUSH ----------------
+        stage('Docker Push') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
+                    credentialsId: DOCKER_CREDENTIAL,
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
                 )]) {
-                    sh """
-                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                    docker push ${DOCKER_IMAGE_BACKEND}
-                    docker push ${DOCKER_IMAGE_FRONTEND}
-                    """
+                    sh "echo \$PASS | docker login -u \$USER --password-stdin"
                 }
+
+                sh "docker push ${BACKEND_IMAGE}:${TAG}"
+                sh "docker push ${FRONTEND_IMAGE}:${TAG}"
             }
         }
 
-        stage('Deploy to Server') {
+        // ---------------- TEST WITH DOCKER COMPOSE ----------------
+        stage('Integration Test (Compose)') {
             steps {
-                withCredentials([sshUserPrivateKey(
-                    credentialsId: 'server-ssh',
-                    keyFileVariable: 'SSH_KEY',
-                    usernameVariable: 'SSH_USER'
-                )]) {
-
-                    sh """
-                    ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@${SERVER_IP} '
-                        docker pull ${DOCKER_IMAGE_BACKEND}
-                        docker pull ${DOCKER_IMAGE_FRONTEND}
-                        docker-compose ${DOCKER_COMPOSE_PROD} down
-                        docker-compose ${DOCKER_COMPOSE_PROD} up -d
-                    '
-                    """
-                }
+                sh "docker-compose -f docker-compose.dev.yml up -d"
+                sh "sleep 15"
+                sh "curl -f http://localhost:8080/api/health"
             }
         }
 
-        stage('Health Check') {
+        // ---------------- SONAR ----------------
+        stage('SonarQube Analysis') {
             steps {
-                sh '''
-                for i in {1..10}; do
-                    curl -f http://localhost:8080/api/health && exit 0
-                    echo "Waiting for backend..."
-                    sleep 5
-                done
-                echo "Health check failed!"
-                exit 1
-                '''
-             }
-        }
-
-            stage('Sync to GitLab') {
-    steps {
-        withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GITLAB_TOKEN', usernameVariable: 'GITLAB_USER')]) {
-            sh """
-                CURRENT_BRANCH=\$(git rev-parse --abbrev-ref HEAD)
-                
-                git remote add gitlab https://${GITLAB_USER}:${GITLAB_TOKEN}@gitlab.com/mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
-                
-                git push gitlab HEAD:refs/heads/\$CURRENT_BRANCH --force
-            """
+                dir('backend/my-app') {
+                    sh """
+                    mvn sonar:sonar \
+                      -Dsonar.host.url=http://localhost:9000 \
+                      -Dsonar.login=$SONAR_TOKEN
+                    """
+                }
+            }
         }
     }
-}
-}
 
     post {
         always {
-            sh "docker compose ${DOCKER_COMPOSE_DEV} down || true"
+            sh "docker-compose -f docker-compose.dev.yml down || true"
             sh "docker image prune -f"
         }
 
         success {
-            echo '🚀 SUCCESS: Deployment completed successfully!'
+            echo "🚀 SUCCESS: Pipeline completed"
         }
 
         failure {
-            echo '❌ FAILURE: Check logs!'
+            echo "❌ FAILURE: Pipeline failed"
         }
     }
 }
