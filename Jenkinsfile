@@ -45,6 +45,20 @@ pipeline {
                 }
             }
         }
+
+        stage('Push to GitLab') {
+    steps {
+        script {
+            withCredentials([usernamePassword(credentialsId: 'gitlab-creds', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                sh """
+                    git remote add gitlab https://${GIT_USERNAME}:${GIT_PASSWORD}@gitlab.com:mustafaguler3/fullstack-java-nextjs-ecommerce.git || true
+                    git checkout master
+                    git push gitlab master
+                """
+            }
+        }
+    }
+}
     }
 
     post {
