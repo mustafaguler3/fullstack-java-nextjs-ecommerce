@@ -1,0 +1,25 @@
+stages:
+  - build
+  - test
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+services:
+  - docker:dind
+
+build_dev:
+  stage: build
+  image: docker:latest
+  script:
+    - docker compose -f docker-compose.dev.yml build
+  only:
+    - devops/jenkins-setup
+
+test_backend:
+  stage: test
+  image: docker:latest
+  script:
+    - docker compose -f docker-compose.dev.yml run --rm backend ./mvnw test
+  only:
+    - devops/jenkins-setup
