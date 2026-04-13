@@ -10,6 +10,10 @@ import com.example.my_app.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +28,25 @@ public class ProductServiceImpl implements ProductService {
     private final ModelMapper modelMapper;
 
     @Override
-    public Response<List<ProductDTO>> findAllProducts() {
-        log.info("inside of product service");
+    public Response<Page<ProductDTO>> findAllProducts(int page, int size, String sortBy, String sortDir) {
+        log.info("Fetching products with pagination: page {}, size {}", page, size);
 
-        List<Product> products = productRepository.findAll();
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
-        if (products.isEmpty()) {
-            log.warn("No products found in database");
-            throw new ApiException("Product not found", HttpStatus.NOT_FOUND);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        if (productPage.isEmpty()) {
+            log.warn("No products found for page {}", page);
+            throw new ApiException("No products found", HttpStatus.NOT_FOUND);
         }
 
-        log.info(productRepository.count() + " product counts:");
+        Page<ProductDTO> dtos = productPage.map(product -> modelMapper.map(product, ProductDTO.class));
 
-        List<ProductDTO> dtos =
-                products
-                        .stream()
-                        .map(product -> modelMapper.map(product,ProductDTO.class))
-                        .toList();
-
-        return Response.<List<ProductDTO>>
-                builder()
+        return Response.<Page<ProductDTO>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .data(dtos)
                 .message("Products retrieved successfully")
