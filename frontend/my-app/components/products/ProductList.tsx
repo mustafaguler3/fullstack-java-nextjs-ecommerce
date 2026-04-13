@@ -12,18 +12,16 @@ interface Props {
 
 export default function ProductList({ sortBy, sortDir }: Props) {
   const [page, setPage] = useState(0);
-  const size = 6; // 🔥 her sayfada 6 ürün
+  const size = 6;
 
   const { data, isLoading, error } = useProducts(page, size, sortBy, sortDir);
 
-  // ✅ BACKEND DATA PARSE (EN KRİTİK KISIM)
   const products = data?.content || [];
   const totalPages = data?.totalPages || 0;
 
   console.log("FULL DATA:", data);
 console.log("TOTAL PAGES:", data?.totalPages);
 
-  // 👉 Sayfa değişince yukarı scroll (UX iyileştirme)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
