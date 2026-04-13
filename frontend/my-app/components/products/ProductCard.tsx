@@ -60,7 +60,6 @@ export default function ProductCard({ product }: Props) {
             </div>
           )}
 
-          {/* Hoverda Açılan Göz İkonu Katmanı */}
           <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
             <button
               onClick={() => setIsModalOpen(true)}
