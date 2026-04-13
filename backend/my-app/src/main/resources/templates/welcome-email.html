@@ -1,10 +1,85 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <style>
+        body { margin: 0; padding: 0; background-color: #020617; font-family: 'Inter', -apple-system, sans-serif; }
+        .wrapper { width: 100%; padding: 40px 0; background-color: #020617; }
+        .main {
+            background-color: #0f172a;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .header {
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        /* MG STORE Gradient Style */
+        .logo {
+            font-size: 32px;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -2px;
+            color: #60a5fa; /* Fallback */
+            text-decoration: none;
+        }
+        .content { padding: 40px; color: #f8fafc; line-height: 1.8; text-align: center; }
+        .content h2 { color: #ffffff; font-size: 24px; margin-bottom: 20px; }
+        .content p { color: #94a3b8; font-size: 16px; }
+
+        /* Modernized Shop Button */
+        .button-container { margin: 40px 0; }
+        .button {
+            background: linear-gradient(to right, #60a5fa, #22d3ee, #34d399);
+            color: #ffffff !important;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            display: inline-block;
+            box-shadow: 0 10px 15px -3px rgba(34, 211, 238, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .footer { padding: 30px; text-align: center; font-size: 12px; color: #475569; border-top: 1px solid rgba(255,255,255,0.05); }
+    </style>
 </head>
 <body>
-$END$
+<div class="wrapper">
+    <table class="main">
+        <tr>
+            <td class="header">
+                <span class="logo">MG STORE</span>
+            </td>
+        </tr>
+        <tr>
+            <td class="content">
+                <h2 th:text="'Welcome, ' + ${fullName} + '!'"></h2>
+                <p>Experience the next generation of shopping. Your account at MG Store is now active and ready for exploration.</p>
+                <p>We've curated a special collection of tech and fashion just for you. High performance, zero compromises.</p>
+
+                <div class="button-container">
+                    <a href="https://mgstore.com/shop" class="button">Start Exploring</a>
+                </div>
+
+                <p style="font-size: 14px; margin-top: 40px;">If you didn't create an account, please ignore this email.</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="footer">
+                <p>&copy; 2026 MG Store. Built with precision.</p>
+                <p>Istanbul // EMEA Region</p>
+            </td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
